@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Forum</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .discussion-form,
+        .comment-form {
+            margin: 20px 0;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .discussion {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .discussion h2 {
+            margin: 0;
+        }
+
+        .comment {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #eef;
+            border-radius: 4px;
+        }
+
+        .comment h3 {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Chat Forum</h1>
+
+        <!-- Discussion Submission Form -->
+        <div class="discussion-form">
+            <h2>Create a New Discussion</h2>
+            <input type="text" id="discussionTitle" placeholder="Enter discussion title" required />
+            <textarea id="discussionBody" rows="4" placeholder="Enter your discussion..."></textarea>
+            <button id="submitDiscussion">Submit Discussion</button>
+        </div>
+
+        <!-- Discussions Container -->
+        <div id="discussionsContainer"></div>
+    </div>
+
+
+    <script>
+        // Simulate discussion data storage
+        let discussions = [];
+
+        // Handle discussion submission
+        document.getElementById("submitDiscussion").addEventListener("click", function() {
+            let title = document.getElementById("discussionTitle").value;
+            let body = document.getElementById("discussionBody").value;
+
+            if (title && body) {
+                let discussion = {
+                    id: discussions.length + 1,
+                    title: title,
+                    body: body,
+                    comments: []
+                };
+
+                discussions.push(discussion);
+                displayDiscussions();
+
+                // Clear form fields
+                document.getElementById("discussionTitle").value = "";
+                document.getElementById("discussionBody").value = "";
+            }
+        });
+
+        // Display all discussions
+        function displayDiscussions() {
+            let discussionsContainer = document.getElementById("discussionsContainer");
+            discussionsContainer.innerHTML = ""; // Clear container before rendering
+
+            discussions.forEach(discussion => {
+                let discussionHtml = `
+                    <div class="discussion" id="discussion-${discussion.id}">
+                        <h2>${discussion.title}</h2>
+                        <p>${discussion.body}</p>
+                        <h3>Comments</h3>
+                        <div id="comments-${discussion.id}"></div>
+                        <div class="comment-form">
+                            <textarea id="commentBody-${discussion.id}" rows="2" placeholder="Add a comment"></textarea>
+                            <button onclick="addComment(${discussion.id})">Submit Comment</button>
+                        </div>
+                    </div>
+                `;
+                discussionsContainer.insertAdjacentHTML("beforeend", discussionHtml);
+                displayComments(discussion.id);
+            });
+        }
+
+        // Handle comment submission
+        function addComment(discussionId) {
+            let commentBody = document.getElementById(`commentBody-${discussionId}`).value;
+            if (commentBody) {
+                let discussion = discussions.find(d => d.id === discussionId);
+                discussion.comments.push({ body: commentBody });
+                displayComments(discussionId);
+                document.getElementById(`commentBody-${discussionId}`).value = ""; // Clear comment box
+            }
+        }
+
+        // Display comments for a specific discussion
+        function displayComments(discussionId) {
+            let commentsContainer = document.getElementById(`comments-${discussionId}`);
+            let discussion = discussions.find(d => d.id === discussionId);
+
+            commentsContainer.innerHTML = ""; // Clear container before rendering
+            discussion.comments.forEach(comment => {
+                let commentHtml = `<div class="comment"><p>${comment.body}</p></div>`;
+                commentsContainer.insertAdjacentHTML("beforeend", commentHtml);
+            });
+        }
+    </script>
+
+</body>
+</html>
